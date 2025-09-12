@@ -117,7 +117,7 @@ Internal Server Error.
     "isPalindrome": true
 }
 ```
-**Response: 400**  
+**Response: 404**  
 Returned if the provided message ID is invalid or does not exist.
 ```json
 {
@@ -155,12 +155,30 @@ The field message must be a string between 1 and 1000 characters.
     "status": "Updated"
 }
 ```
-**Response: 400**  
+**Response: 404**  
 Returned if the provided message ID is invalid or does not exist.
 ```json
 {
     "messageId": "68c37484f12a19c9f16991ff",
     "error": "Message Not Found"
+}
+```
+**Response: 400**   
+Occurs when the payload is malformed.
+
+```json
+{
+    "errors": [
+        {
+            "instancePath": "/message",
+            "schemaPath": "#/properties/message/minLength",
+            "keyword": "minLength",
+            "params": {
+                "limit": 1
+            },
+            "message": "must NOT have fewer than 1 characters"
+        }
+    ]
 }
 ```
 
@@ -184,7 +202,7 @@ Internal Server Error.
     "status": "Deleted"
 }
 ```
-**Response: 400**  
+**Response: 404**  
 Returned if the provided message ID is invalid or does not exist.
 ```json
 {
