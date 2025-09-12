@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const database = require("../database/database");
+const authenticator = require("../middleware/Authentication");
+
+router.use(authenticator);
 
 router.get('/', async function(req, res) {
     const collectionName = process.env.HEALTH_COLLECTION_NAME;

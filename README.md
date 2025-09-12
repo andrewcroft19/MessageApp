@@ -20,6 +20,11 @@ http://localhost:8080/
 1. After first cloning the project run npx jest --init in a command prompt in the MessagesApp directory.
 2. Run npm test in a command prompt in the MessagesApp directory.
 
+## Authentication  
+This API is authenticated using basic authentication. Ensure all requests send the provided clientid and secret, otherwise an authentication error will occur.  
+  
+Error Code: 401 Unauthorized.
+
 # Endpoints
 
 ### 1. Create a Message
@@ -232,14 +237,17 @@ flowchart TD
     %% Global Middleware
     Express -->|Global Middleware: JSON Parser, Logger| Middleware[Middleware Layer]
 
+    %% Basic Auth Middleware
+    Middleware -->|Basic Auth: authenticate user| AuthMiddleware[Authentication.js Middleware]
+
     %% Routes
-    Middleware --> |/messages|MessagesRouter[/messages.js Router/]
-    Middleware --> |/health|HealthRouter[/health.js Router/]
+    AuthMiddleware --> |/messages|MessagesRouter[/messages.js Router/]
+    AuthMiddleware --> |/health|HealthRouter[/health.js Router/]
 
     %% Message-specific middleware applied BEFORE route handler
-    MessagesRouter -->|GET/DELETE: validateMessageId| ValidateID[MessageIdValidator.js]
-    MessagesRouter -->|POST: validatePayload| ValidatePayload[PayloadValidator.js]
-    MessagesRouter -->|PATCH: MessageIdValidator.js + PayloadValidator.js| ValidatePatch[Payload & MessageId Validator]
+    MessagesRouter -->|GET/DELETE: validateMessageId| ValidateID[MessageIdValidator.js Middleware]
+    MessagesRouter -->|POST: validatePayload| ValidatePayload[PayloadValidator.js Middleware]
+    MessagesRouter -->|PATCH: validatePayload + validateMssageId| ValidatePatch[MessageIdValidator.js + PayloadValidator.js Middleware]
 
     %% Services
     ValidateID --> MessageService[MessageHandler.js]
@@ -252,8 +260,5 @@ flowchart TD
     DatabaseLayer -->|Queries| MongoDB[(MongoDB Atlas Cluster)]
 
     %% Response
-    MessageService -->|Response| Express
-    HealthRouter -->|Response| Express
-    Express -->|HTTP Response| Client
 ```
 

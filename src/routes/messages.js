@@ -3,6 +3,9 @@ const router = express.Router();
 const payloadValidator = require("../middleware/PayloadValidator");
 const messageIdValidator = require("../middleware/MessageIdValidator");
 const messageHandler = require("../messageHandling/MessageHandler");
+const authenticator = require("../middleware/Authentication");
+
+router.use(authenticator);
 
 router.get('/', async function(req, res) {
   try {
