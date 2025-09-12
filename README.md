@@ -14,6 +14,11 @@ http://localhost:8080/
 3. Run npm install to install all dependancies.
 4. Add the .env file to the MessageApp directory. This was provided seperately from this repository.
 5. Run npm start.
+
+## Unit Test Run Instructions
+1. After first cloning the project run npx jest --init in a command prompt in the MessagesApp directory.
+2. Run npm test in a command prompt in the MessagesApp directory.
+
 # Endpoints
 
 ### 1. Create a Message
@@ -187,6 +192,30 @@ Internal Server Error.
 ```json
 {
     "error": "Internal Server Error"
+}
+```
+### 6. Health
+
+**GET** `/health`
+
+**Description:** Ensures the app is running and that it can connect to the database and perform read, write, and delete operations.
+
+**Response: 200**
+```json
+{
+    "dbWritePassed": true,
+    "dbReadPassed": true,
+    "dbDeletePassed": true
+}
+```
+**Error Response 500:**    
+Internal Server Error.  
+The response payload outlines which database operations failed.
+```json
+{
+    "dbWritePassed": false,
+    "dbReadPassed": true,
+    "dbDeletePassed": true
 }
 ```
 ## Notes
