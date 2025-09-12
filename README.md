@@ -13,17 +13,16 @@ http://localhost:8080/
 2. Open command prompt in the MessagesApp directory.
 3. Run "npm install" to install all dependancies.
 4. Run "cp .env.example .env".
-5. Open the created .env file and fill in the DB_USERNAME and DB_PASSWORD fields with the provided database username and password.
+5. Open the created .env file and fill in the BASIC_AUTH_CLIENTID, BASIC_AUTH_SECRET, DB_USERNAME and DB_PASSWORD fields with the provided credentials.
 6. Run "npm start".
 
 ## Unit Test Run Instructions
 1. After first cloning the project run npx jest --init in a command prompt in the MessagesApp directory.
 2. Run npm test in a command prompt in the MessagesApp directory.
-
+## Postman Test Run Instructions  
+In the provided postman collection, click on the collection and then press the "run" button. On the run screen press "Run Message App". The healthcheck and regression tests will then run and the results will display on the screen.
 ## Authentication  
-This API is authenticated using basic authentication. Ensure all requests send the provided clientid and secret, otherwise an authentication error will occur.  
-  
-Error Code: 401 Unauthorized.
+This API is authenticated using basic authentication. Ensure all requests send the provided clientid and secret, otherwise an authentication error will occur. The error code is 401 Unauthorized.
 
 # Endpoints
 
