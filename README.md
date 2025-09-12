@@ -11,9 +11,10 @@ http://localhost:8080/
 ## Startup Instructions  
 1. Clone this repository.
 2. Open command prompt in the MessagesApp directory.
-3. Run npm install to install all dependancies.
-4. Add the .env file to the MessageApp directory. This was provided seperately from this repository.
-5. Run npm start.
+3. Run "npm install" to install all dependancies.
+4. Run "cp .env.example .env".
+5. Open the created .env file and fill in the DB_USERNAME and DB_PASSWORD fields with the provided database username and password.
+6. Run "npm start".
 
 ## Unit Test Run Instructions
 1. After first cloning the project run npx jest --init in a command prompt in the MessagesApp directory.
