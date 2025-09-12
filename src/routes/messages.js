@@ -5,80 +5,86 @@ const messageIdValidator = require("../middleware/MessageIdValidator");
 const messageHandler = require("../messageHandling/MessageHandler");
 
 router.get('/', async function(req, res) {
-  const messageResults = await messageHandler.readAllMessages();
-
-  if (messageResults) {
+  try {
+    const messageResults = await messageHandler.readAllMessages();
     streamResults(res, messageResults);
-  } else {
+  } catch (err) {
+    console.error("Exception reading all messages", err);
     sendErrorResponse(500, null, res);
   }
 });
 
 router.get('/:messageId', messageIdValidator.validateMessageId, async function(req, res) {
-  const messageCursor = await messageHandler.readSingleMessage(req.params.messageId);
+  try {
+    const messageCursor = await messageHandler.readSingleMessage(req.params.messageId); 
+    var message = await messageCursor.limit(1).toArray();
 
-  if (!messageCursor) {
+    if (message[0]) {
+      res.json(message[0]);
+    } else {
+      sendErrorResponse(400, req.params.messageId, res);
+    }
+  } catch (err) {
+    console.error("Exception reading single message", err);
     sendErrorResponse(500, null, res);
-  }
-
-  var message = await messageCursor.limit(1).toArray();
-
-  if (message[0]) {
-    res.json(message[0]);
-  } else {
-    sendErrorResponse(400, req.params.messageId, res);
   }
 });
 
 router.post('/', payloadValidator.validatePayload, async function(req, res) {
-  const messageId = await messageHandler.createMessage(req.body.message, null);
-  
-  if  (messageId) {
-    sendSuccessResponse(201, messageId, res, "Created")
-  } else {
+  try {
+    const messageId = await messageHandler.createMessage(req.body.message, null);
+    sendSuccessResponse(201, messageId, res, "Created");
+  } catch (err) {
+    console.error("Exception creating message", err);
     sendErrorResponse(500, null, res);
   }
 });
 
 router.patch('/:messageId', payloadValidator.validatePayload, messageIdValidator.validateMessageId, async function(req, res) {
+  try {
     const updateResults = await messageHandler.updateMessage(req.body.message, req.params.messageId);
 
-    if (!updateResults) {
-      sendErrorResponse(500, null, res);
-    } else if (updateResults.matchedCount === 0) {
+    if (updateResults.matchedCount === 0) {
       sendErrorResponse(400, req.params.messageId, res);
     } else {
       let responseMessage;
 
       if (updateResults.modifiedCount == 0) {
-        responseMessage = "Update Skipped, no change detected"
+        responseMessage = "Update Skipped, no change detected";
       } else {
-        responseMessage = "Updated"
+        responseMessage = "Updated";
       }
       sendSuccessResponse(200, req.params.messageId, res, responseMessage);
     }
-});
-
-router.delete('/:messageId', messageIdValidator.validateMessageId, async function(req, res) {
-  const messagesRemoved = await messageHandler.deleteSingleMessage(req.params.messageId);
-
-  if (messagesRemoved != 1) {
-    if (messagesRemoved === null) {
-      sendErrorResponse(500, null, res);
-    } else if (messagesRemoved < 1) {
-      sendErrorResponse(400, req.params.messageId, res);
-    } 
-  } else {
-    sendSuccessResponse(200, req.params.messageId, res, "Deleted");
+  } catch (err) {
+    console.error("Exception updating message", err);
+    sendErrorResponse(500, null, res);
   }
 });
 
+router.delete('/:messageId', messageIdValidator.validateMessageId, async function(req, res) {
+  try {
+    const messagesRemoved = await messageHandler.deleteSingleMessage(req.params.messageId);
+
+    if (messagesRemoved != 1) {
+      sendErrorResponse(400, req.params.messageId, res);
+    } else {
+      sendSuccessResponse(200, req.params.messageId, res, "Deleted");
+    }
+  } catch (err) {
+    console.error("Exception deleting message", err);
+    sendErrorResponse(500, null, res);
+  }
+});
+
+//When there are large data sets returned loading them into memory all at once can be inefficient.
+//This function writes the results to the response stream as they are read from the DB, reducing memory overhead.
 async function streamResults(res, messageResults) {
   res.setHeader("Content-Type", "application/json");
   res.write('{ "messages": [');
   let first = true;
 
-  for await (const message of messageResults) {
+  for await (let message of messageResults) {
       if (!first) res.write(",");
       res.write(JSON.stringify(message));
       first = false;

@@ -11,15 +11,11 @@ async function createMessage(message, messageId) {
         createdMessageId = await database.writeSingleRecordToDB({message : message, isPalindrome : isPalindrome(message)}, collectionName);
     }
 
-    if (createdMessageId) {
-        return createdMessageId;
-    }
-
-    return null;
+    return createdMessageId;
 }
 
 async function deleteSingleMessage(messageId) {
-    const messagesDeleted = await database.deleteOneRecordFromDB({_id : new ObjectId(messageId)}, collectionName);
+    const messagesDeleted = await database.deleteSingleRecordFromDB({_id : new ObjectId(messageId)}, collectionName);
     
     return messagesDeleted;
 }
@@ -48,13 +44,13 @@ function isPalindrome(message) {
         return false
     }
     
-    const maxIndex = message.length/2 + 1;
-    const lastStringIndex = message.length - 1;
+    let maxIndex = message.length/2 + 1;
+    let lastStringIndex = message.length - 1;
     
     for (let i = 0; i < maxIndex; i++) {
-        const currentChar = message.charAt(i);
-        const inverseIndex = lastStringIndex - i;
-        const inverseChar = message.charAt(inverseIndex);
+        let currentChar = message.charAt(i);
+        let inverseIndex = lastStringIndex - i;
+        let inverseChar = message.charAt(inverseIndex);
     
         if (i === inverseIndex) {
             break

@@ -12,7 +12,7 @@ router.get('/', async function(req, res) {
     const results = await dbRead.toArray();
     const dbReadPassed = results != null;
 
-    const dbDelete = await database.deleteOneRecordFromDB({_id : probe._id}, collectionName);
+    const dbDelete = await database.deleteSingleRecordFromDB({_id : probe._id}, collectionName);
     const dbDeletePassed = dbDelete != null;
   
     if (dbWritePassed && dbReadPassed && dbDeletePassed) {
