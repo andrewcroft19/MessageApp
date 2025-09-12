@@ -25,7 +25,7 @@ router.get('/:messageId', messageIdValidator.validateMessageId, async function(r
     if (message[0]) {
       res.json(message[0]);
     } else {
-      sendErrorResponse(400, req.params.messageId, res);
+      sendErrorResponse(404, req.params.messageId, res);
     }
   } catch (err) {
     console.error("Exception reading single message", err);
@@ -48,7 +48,7 @@ router.patch('/:messageId', payloadValidator.validatePayload, messageIdValidator
     const updateResults = await messageHandler.updateMessage(req.body.message, req.params.messageId);
 
     if (updateResults.matchedCount === 0) {
-      sendErrorResponse(400, req.params.messageId, res);
+      sendErrorResponse(404, req.params.messageId, res);
     } else {
       let responseMessage;
 
@@ -70,7 +70,7 @@ router.delete('/:messageId', messageIdValidator.validateMessageId, async functio
     const messagesRemoved = await messageHandler.deleteSingleMessage(req.params.messageId);
 
     if (messagesRemoved != 1) {
-      sendErrorResponse(400, req.params.messageId, res);
+      sendErrorResponse(404, req.params.messageId, res);
     } else {
       sendSuccessResponse(200, req.params.messageId, res, "Deleted");
     }
