@@ -5,7 +5,7 @@ A simple RESTful API for creating, retrieving, updating, and deleting messages.
 ## Base URL
 http://localhost:8080/
 
-## Dependancies
+## Dependencies
 1. Node.js v20.11.1
 
 ## Startup Instructions  
@@ -222,3 +222,38 @@ The response payload outlines which database operations failed.
 ## Notes
 1. The field 'Palindrome' indicates whether the provided message is a palindrome. This is derived before DB insertion. It is updated based on the provided message when a PATCH request is sent
 2. IDs are MongoDB ObjectIds in string format.
+
+## Architecture Diagram
+```mermaid
+flowchart TD
+    %% Client
+    Client[Client] -->|HTTP Request| Express[Express Server]
+
+    %% Global Middleware
+    Express -->|Global Middleware: JSON Parser, Logger| Middleware[Middleware Layer]
+
+    %% Routes
+    Middleware --> |/messages|MessagesRouter[/messages.js Router/]
+    Middleware --> |/health|HealthRouter[/health.js Router/]
+
+    %% Message-specific middleware applied BEFORE route handler
+    MessagesRouter -->|GET/DELETE: validateMessageId| ValidateID[MessageIdValidator.js]
+    MessagesRouter -->|POST: validatePayload| ValidatePayload[PayloadValidator.js]
+    MessagesRouter -->|PATCH: MessageIdValidator.js + PayloadValidator.js| ValidatePatch[Payload & MessageId Validator]
+
+    %% Services
+    ValidateID --> MessageService[MessageHandler.js]
+    ValidatePayload --> MessageService
+    ValidatePatch --> MessageService
+
+    %% Database Layer
+    MessageService --> |Handles DB Operations| DatabaseLayer[Database.js]
+    HealthRouter -->|Check DB Connection| DatabaseLayer
+    DatabaseLayer -->|Queries| MongoDB[(MongoDB Atlas Cluster)]
+
+    %% Response
+    MessageService -->|Response| Express
+    HealthRouter -->|Response| Express
+    Express -->|HTTP Response| Client
+```
+
