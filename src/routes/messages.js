@@ -10,7 +10,7 @@ router.use(authenticator);
 router.get('/', async function(req, res) {
   try {
     const messageResults = await messageHandler.readAllMessages();
-    streamResults(res, messageResults);
+    res.json(await messageResults.toArray());
   } catch (err) {
     console.error("Exception reading all messages", err);
     sendErrorResponse(500, null, res);
@@ -79,26 +79,6 @@ router.delete('/:messageId', messageIdValidator.validateMessageId, async functio
     sendErrorResponse(500, null, res);
   }
 });
-
-//When there are large data sets returned loading them into memory all at once can be inefficient.
-//This function writes the results to the response stream as they are read from the DB, reducing memory overhead.
-async function streamResults(res, messageResults) {
-  res.setHeader("Content-Type", "application/json");
-  res.write('{ "messages": [');
-  let first = true;
-
-  for await (let message of messageResults) {
-      if (!first) {
-        res.write(",");
-      }
-        
-      res.write(JSON.stringify(message));
-      first = false;
-  }
-
-  res.write("]}");
-  res.end();
-}
 
 function sendErrorResponse(statusCode, messageId, res) {
   res.statusCode = statusCode;
