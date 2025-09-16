@@ -20,7 +20,7 @@ router.get('/', async function(req, res) {
 router.get('/:messageId', messageIdValidator.validateMessageId, async function(req, res) {
   try {
     const messageCursor = await messageHandler.readSingleMessage(req.params.messageId); 
-    var message = await messageCursor.limit(1).toArray();
+    let message = await messageCursor.limit(1).toArray();
 
     if (message[0]) {
       res.json(message[0]);
@@ -52,7 +52,7 @@ router.patch('/:messageId', payloadValidator.validatePayload, messageIdValidator
     } else {
       let responseMessage;
 
-      if (updateResults.modifiedCount == 0) {
+      if (updateResults.modifiedCount === 0) {
         responseMessage = "Update Skipped, no change detected";
       } else {
         responseMessage = "Updated";
@@ -69,7 +69,7 @@ router.delete('/:messageId', messageIdValidator.validateMessageId, async functio
   try {
     const messagesRemoved = await messageHandler.deleteSingleMessage(req.params.messageId);
 
-    if (messagesRemoved != 1) {
+    if (messagesRemoved !== 1) {
       sendErrorResponse(404, req.params.messageId, res);
     } else {
       sendSuccessResponse(200, req.params.messageId, res, "Deleted");
@@ -88,7 +88,10 @@ async function streamResults(res, messageResults) {
   let first = true;
 
   for await (let message of messageResults) {
-      if (!first) res.write(",");
+      if (!first) {
+        res.write(",");
+      }
+        
       res.write(JSON.stringify(message));
       first = false;
   }
@@ -101,7 +104,7 @@ function sendErrorResponse(statusCode, messageId, res) {
   res.statusCode = statusCode;
   let responsePayload = {}
 
-  if (messageId != null) {
+  if (messageId !== null) {
     responsePayload.messageId = messageId
   }
 
@@ -117,7 +120,7 @@ function sendSuccessResponse(statusCode, messageId, res, responseMessage) {
   res.statusCode = statusCode;
   let responsePayload = {};
 
-  if (messageId != null) {
+  if (messageId !== null) {
     responsePayload.messageId = messageId
   }
 

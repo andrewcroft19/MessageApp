@@ -56,7 +56,7 @@ function isPalindrome(message) {
             break
         }
     
-        if (currentChar != inverseChar) {
+        if (currentChar !== inverseChar) {
             return false
         }
     }
