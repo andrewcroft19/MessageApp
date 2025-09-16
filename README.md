@@ -22,7 +22,7 @@ http://localhost:8080/
 ## Postman Test Run Instructions  
 In the provided postman collection, click on the collection and then press the "run" button. On the run screen press "Run Message App". The healthcheck and regression tests will then run and the results will display on the screen.
 ## Authentication  
-This API is authenticated using basic authentication. Ensure all requests send the provided clientid and secret, otherwise an authentication error will occur. The error code is 401 Unauthorized.
+This API is authenticated using basic authentication. Ensure all requests send the provided clientid and secret in the Authorization header, otherwise an authentication error will occur. The error code is 401 Unauthorized.
 
 # Endpoints
 
