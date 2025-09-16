@@ -60,7 +60,8 @@ function isPalindrome(message) {
             return false
         }
     }
+
     return true;
 }
 
-module.exports = {createMessage, deleteSingleMessage: deleteSingleMessage, readAllMessages, readSingleMessage, updateMessage, isPalindrome}
+module.exports = {createMessage, deleteSingleMessage, readAllMessages, readSingleMessage, updateMessage, isPalindrome}
